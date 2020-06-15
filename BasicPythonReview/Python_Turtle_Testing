@@ -1,0 +1,18 @@
+import turtle
+pat = turtle.Turtle()
+
+turtle.Screen().bgcolor("black")
+pat.color("white")
+
+for i in range(5):
+    for j in range(2):
+        pat.forward(100)
+        pat.right(60)
+        pat.forward(100)
+        pat.right(120)
+        pat.right(36)
+        # pat.penup() # doesn't draw for following instructions
+        # pat.pendown() # returns to drawing
+
+# while True:
+    
