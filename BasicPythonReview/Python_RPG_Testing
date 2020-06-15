@@ -1,0 +1,131 @@
+#!/bin/python3
+
+# Replace RPG starter project with this code when new instructions are live
+
+def showInstructions():
+  #print a main menu and the commands
+    print('''
+RPG Game
+========
+Commands:
+  go [direction]
+  get [item]
+  look around #custom
+  return #custom
+  quit #custom
+''')
+
+def showStatus():
+  #print the player's current status
+    print('---------------------------')
+    print('You are in the ' + currentRoom)
+  #print the current inventory
+    print('Inventory : ' + str(inventory))
+  #print an item if there is one
+    if "item" in rooms[currentRoom]:
+        print('You see a ' + rooms[currentRoom]['item'])
+    print("---------------------------")
+        
+
+#an inventory, which is initially empty
+inventory = []
+
+#a dictionary linking a room to other rooms
+rooms = {
+
+            'Hall' : { 
+                'south' : 'Kitchen',
+                'east' : 'Dining Room',
+                'item' : 'KeyTest'
+                },
+
+            'Kitchen' : {
+                'north' : 'Hall',
+                'enemy' : 'Monster'
+                },
+            'Dining Room' : {
+                'west' : 'Hall'
+                }
+
+        }
+
+#a dictionary linking cardinal directions to their inverse
+compass = {
+                'north' : 'south',
+                'south' : 'north',
+                'east' : 'west',
+                'west' : 'east'
+            }
+
+#start the player in the Hall
+currentRoom = 'Hall'
+
+showInstructions()
+
+lastMove = ''
+lookFlag = 0
+errFlag = 0
+#loop forever
+while True:
+
+    showStatus()
+    if(lookFlag):
+        lookFlag = 0
+        for i in rooms[currentRoom]:
+            print(i," = ",rooms[currentRoom][i])
+    elif(errFlag):
+        print('Sorry, I didn\'t get that. Try again?')
+        errFlag = 0
+
+    #get the player's next 'move'
+    #.split() breaks it up into an list array
+    #eg typing 'go east' would give the list:
+    #['go','east']
+    move = ''
+    while move == '':  
+        move = input('>')
+        
+    move = move.lower()
+    
+#Multi Word Commands
+    if ' ' not in move:
+    #Single Word Commands
+        if move == 'quit':
+            break
+            # Break out
+        elif move == 'return':
+            #print('returnCheck lastMove =',lastMove) #debug1
+            if lastMove != '':
+                #print('Check2 =',compass[lastMove]) #debug2
+                move = 'go ' + compass[lastMove]
+                #print('Check3 =',move)
+            else:
+                print('Nowhere to return to.')
+            # if player attempts to return to prev. room, do so
+    move = move.split()
+    #if they type 'go' first
+    if move[0] == 'go':
+    #check that they are allowed wherever they want to go
+        if move[1] in rooms[currentRoom]:
+            currentRoom = rooms[currentRoom][move[1]]
+            lastMove = move[-1]
+            #set the current room to the new room and store old room
+        #there is no door (link) to the new room
+        else:
+            print('You can\'t go that way!')    #if they type 'get' first
+    elif move[0] == 'get' :
+    #if the room contains an item, and the item is the one they want to get
+        if "item" in rooms[currentRoom] and move[1] in rooms[currentRoom]['item'].lower():
+            #add the item to their inventory
+            inventory += [move[1]]
+            #display a helpful message
+            print(move[1] + ' got!')
+            #delete the item from the room
+            del rooms[currentRoom]['item']
+            #otherwise, if the item isn't there to get
+        else:
+            #tell them they can't get it
+            print('Can\'t get ' + move[1] + '!')
+    elif move[0] == 'look' :
+        lookFlag = 1
+
